@@ -8,53 +8,64 @@ namespace TestCoreConsoleApp
 {
     class Program
     {
-        const int TimerIntervalMillinseconds = 3000;
-        const bool flag = true;
-
         static async Task Main(string[] args)
         {
-            var autoEvent = new AutoResetEvent(false);
+            Frog aFrog = new Frog();
+            Frog bFrog = new Frog();
+            Animal aAnimal = aFrog;
+            Animal bAnimal = bFrog;
+            // not necessarily equal...
+            bool areEqualFrogs = aFrog.Equals(bFrog);
+            bool areEqualAnimals = aAnimal.Equals(bAnimal);
+            Console.WriteLine(areEqualFrogs);
+            Console.WriteLine(areEqualAnimals);
 
-            var statusChecker = new StatusChecker();
+            Console.WriteLine(aFrog == bFrog);
+            Console.WriteLine(aAnimal == bAnimal);
+            Console.WriteLine(aFrog == bAnimal);
+            //string str1 = null;
+            //string str2 = null;
 
-            Console.WriteLine("{0:h:mm:ss.fff} Creating timer.\n",
-                              DateTime.Now);
-            var stateTimer = new Timer(statusChecker.CheckStatus,
-                                       autoEvent, 1000, TimerIntervalMillinseconds);
-
-            // When autoEvent signals, change the period to every half second.
-            autoEvent.WaitOne();
-            stateTimer.Dispose();
+            //Console.WriteLine(Object.ReferenceEquals(str1, str2));
         }
 
-        class StatusChecker
+      
+    }
+
+    internal class Frog : Animal
+    {
+        public override bool Equals(object obj)
         {
-            private int invokeCount = 0;
-            private int millisecondsTimeout = 90000;
-            private int maxCount;
+            Console.WriteLine("Equals works");
+            return true;
+        }
 
-            public StatusChecker()
-            {
-                maxCount = millisecondsTimeout / TimerIntervalMillinseconds;
-            }
+        public static bool operator ==(Frog a, Frog b)
+        {
+            Console.WriteLine("== works");
+            return true;
+        }
 
+        public static bool operator !=(Frog a, Frog b)
+        {
+            Console.WriteLine("!= works");
+            return true;
+        }
 
-            // This method is called by the timer delegate.
-            public void CheckStatus(Object stateInfo)
-            {
-                AutoResetEvent autoEvent = (AutoResetEvent)stateInfo;
-                Console.WriteLine("{0} Checking status {1,2}.",
-                    DateTime.Now.ToString("h:mm:ss.fff"),
-                    (++invokeCount).ToString());
+    }
 
+    internal class Animal
+    {
+        public static bool operator ==(Animal a, Animal b)
+        {
+            Console.WriteLine("== works");
+            return false;
+        }
 
-                if (invokeCount == maxCount)
-                {
-                    // Reset the counter and signal the waiting thread.
-                    invokeCount = 0;
-                    autoEvent.Set();
-                }
-            }
+        public static bool operator !=(Animal a, Animal b)
+        {
+            Console.WriteLine("!= works");
+            return false;
         }
     }
 }
