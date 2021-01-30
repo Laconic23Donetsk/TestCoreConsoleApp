@@ -11,27 +11,33 @@ namespace TestCoreConsoleApp
     {
         static async Task Main(string[] args)
         {
-            //1)
-            //Expression<Func<int, int, int>> adder1 = (x, y) => x + y; //implicit converstion to Expression
-            //Console.WriteLine(adder1);
-
-            ////2) same with 1st
-            //ParameterExpression xParameter = Expression.Parameter(typeof(int), "x"); 
-            //ParameterExpression yParameter = Expression.Parameter(typeof(int), "y"); 
-            //Expression body = Expression.Add(xParameter, yParameter); 
-            //ParameterExpression[] parameters = new[] { xParameter, yParameter }; 
-            //Expression<Func<int, int, int>> adder2 = Expression.Lambda<Func<int, int, int>>(body, parameters); 
-            
-            //Console.WriteLine(adder2);
-
-            #region restrictions
-            ////only  expression-bodied  lambda  expressions  can be converted   to   expression   trees.
-            //Expression<Func<int, int, int>> adder = (x, y) => { return x + y; } //ERROR!
-
-            #endregion
+            Test test = new Test();
+            Console.WriteLine(test.Foo(1, 2));
         }
+    }
 
+    static class StaticClass
+    {
+        public static int Foo(this Test test, int x, int y)
+        {
+            Console.WriteLine("extension method");
+            return x + y;
+        }
+    }
+
+
+    internal class Test
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+
+        public double Foo(double x, double y)
+        {
+            return x + y;
+        }
 
     }
 
+    //First, there’s a matter of priority: if there’s a regular instance method that’s validfor  the method  invocation,  the compiler  will always  prefer that  over an  extensionmethod.It doesn’t matter whether the extension method has “better” parameters; ifthe compiler can use an instance method, it won’t even look for extension methods.
 }
