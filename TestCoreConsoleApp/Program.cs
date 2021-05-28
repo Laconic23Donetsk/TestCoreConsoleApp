@@ -1,4 +1,6 @@
-﻿using Quartz;
+﻿using PdfSharp.Drawing;
+using PdfSharp.Pdf;
+using Quartz;
 using Quartz.Impl;
 using System;
 using System.Collections.Generic;
@@ -13,64 +15,35 @@ namespace TestCoreConsoleApp
     {
         static async Task Main(string[] args)
         {
-            //var addWithConsoleLogger = AdderWithPluggableLogger(ConsoleLogger);
-            //addWithConsoleLogger(1, 2);
-            //addWithConsoleLogger(42, 99);
+            //https://stackoverflow.com/questions/49215791/vs-code-c-sharp-system-notsupportedexception-no-data-is-available-for-encodin
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            Console.WriteLine("Generating PDF...");
 
-            // Or to do make all the calls together…
-            var curried = Curry<int,int,int,int>(Foo);
-            var res1 = curried(5)(5);
-            Console.WriteLine(res1(10));
-            //int result3 = curried(1)(2)(3);
+            // Create a new PDF document
+            var document = new PdfDocument();
+            document.Info.Title = "Created with PDFsharp";
+
+            // Create an empty page
+            var page = document.AddPage();
+
+            // Get an XGraphics object for drawing
+            var gfx = XGraphics.FromPdfPage(page);
+
+            // Create a font
+            var font = new XFont("Verdana", 20, XFontStyle.BoldItalic);
+
+            // Draw the text
+            gfx.DrawString("Hello, World!", font, XBrushes.Black,
+                new XRect(0, 0, page.Width, page.Height),
+                XStringFormats.Center);
+
+            // Save the document...
+            var filename = "HelloWorld.pdf";
+            document.Save(filename);
+            Console.WriteLine("PDF Generated!");
+
+            // ...and start a viewer.
+            //Process.Start(filename);
         }
-
-
-        static Func<T1, Func<T2, Func<T3, TResult>>> Curry<T1, T2, T3, TResult> (Func<T1, T2, T3, TResult> function)
-        {
-            return a => b => c => function(a, b, c);
-        }
-
-        static int Foo(int a, int b, int c)
-        {
-            Console.WriteLine("a+b+c = " + (a + b + c).ToString());
-            return a + b + c;
-        }
-
-
-        delegate int binop(int a, int b);
-        //binop AdderWithPluggableLogger(Action<string, int> logger)
-        //{
-        //    int addWithLogger(int x, int y)
-        //    {
-        //        logger("x", x);
-        //        logger("y", y);
-        //        var result = x + y;
-        //        logger("x+y", result);
-        //        return result;
-        //    }
-
-        //    return addWithLogger;
-        //}
-
-        //binop AdderWithPluggableLogger(Action<string, int> logger) => (int x, int y) =>
-        //{
-        //    logger("x", x);
-        //    logger("y", y);
-        //    var result = x + y;
-        //    logger("x+y", result);
-        //    return result;
-        //};
-
-        //Func<int, int> adderWithPluggableLogger(Action<string, int> logger) => (int x) => (int y) =>
-        //{
-        //    logger("x", x);
-        //    logger("y", y);
-        //    var result = x + y;
-        //    logger("x+y", result);
-        //    return result;
-        //};
-
-
-        void ConsoleLogger(string argName, int argValue) => Console.WriteLine($"{argName}={argValue}");
     }
 }
