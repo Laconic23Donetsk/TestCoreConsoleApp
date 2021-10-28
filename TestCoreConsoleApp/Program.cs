@@ -11,7 +11,12 @@ namespace TestCoreConsoleApp
     {
         static async Task Main(string[] args)
         {
+            Type type = typeof(Newtonsoft.Json.IJsonLineInfo);
+            Console.WriteLine(type);
 
+
+            Type type2 = Type.GetType("Newtonsoft.Json.IJsonLineInfo, newtonsoft.json");
+            Console.WriteLine(type2);
         }
     }
 }
